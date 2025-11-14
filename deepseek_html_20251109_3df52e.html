@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure File Encryption System</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        h1 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .upload-area {
+            border: 2px dashed #bdc3c7;
+            border-radius: var(--border-radius);
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .upload-area i {
+            font-size: 48px;
+            color: #bdc3c7;
+            margin-bottom: 15px;
+        }
+        
+        .upload-area p {
+            margin-bottom: 15px;
+            color: #7f8c8d;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #1a252f;
+        }
+        
+        .btn-danger {
+            background-color: var(--accent-color);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .file-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            display: none;
+        }
+        
+        .file-info.active {
+            display: block;
+        }
+        
+        .file-preview {
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .file-preview.active {
+            display: block;
+        }
+        
+        .file-preview img, .file-preview video {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .preview-placeholder {
+            padding: 40px;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            color: #7f8c8d;
+        }
+        
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .encrypted-files {
+            margin-top: 30px;
+        }
+        
+        .file-list {
+            margin-top: 15px;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+        }
+        
+        .file-name {
+            font-weight: 600;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .status-message {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .status-success {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+            display: block;
+        }
+        
+        .status-error {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            display: block;
+        }
+        
+        .status-info {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            display: block;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Secure File Encryption System</h1>
+            <p class="subtitle">Upload and encrypt your files with military-grade encryption</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-lock"></i> Encrypt Files</h2>
+                
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag & drop your files here or click to browse</p>
+                    <input type="file" id="fileInput" class="hidden" multiple>
+                    <button class="btn" id="browseBtn">Browse Files</button>
+                </div>
+                
+                <div class="file-info" id="fileInfo">
+                    <p><strong>Selected File:</strong> <span id="fileName">-</span></p>
+                    <p><strong>File Size:</strong> <span id="fileSize">-</span></p>
+                    <p><strong>File Type:</strong> <span id="fileType">-</span></p>
+                </div>
+                
+                <div class="file-preview" id="filePreview">
+                    <div class="preview-placeholder">
+                        <i class="fas fa-eye"></i>
+                        <p>File preview will appear here</p>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-success action-btn" id="encryptBtn" disabled>
+                        <i class="fas fa-lock"></i> Encrypt File
+                    </button>
+                    <button class="btn btn-secondary action-btn" id="resetBtn" disabled>
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+                
+                <div class="status-message" id="encryptStatus"></div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-unlock"></i> Decrypt Files</h2>
+                
+                <div class="upload-area" id="decryptUploadArea">
+                    <i class="fas fa-file-import"></i>
+                    <p>Select an encrypted file to decrypt</p>
+                    <input type="file" id="decryptFileInput" class="hidden" accept=".encrypted">
+                    <button class="btn" id="decryptBrowseBtn">Browse Encrypted Files</button>
+                </div>
+                
+                <div class="file-info" id="decryptFileInfo">
+                    <p><strong>Selected File:</strong> <span id="decryptFileName">-</span></p>
+                    <p><strong>File Size:</strong> <span id="decryptFileSize">-</span></p>
+                </div>
+                
+                <div class="file-preview" id="decryptFilePreview">
+                    <div class="preview-placeholder">
+                        <i class="fas fa-eye"></i>
+                        <p>Decrypted file preview will appear here</p>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-success action-btn" id="decryptBtn" disabled>
+                        <i class="fas fa-unlock"></i> Decrypt File
+                    </button>
+                    <button class="btn btn-secondary action-btn" id="decryptResetBtn" disabled>
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+                
+                <div class="status-message" id="decryptStatus"></div>
+            </div>
+        </div>
+        
+        <div class="card encrypted-files">
+            <h2 class="card-title"><i class="fas fa-folder"></i> Your Encrypted Files</h2>
+            <p>Files encrypted by this system will appear here</p>
+            
+            <div class="file-list" id="fileList">
+                <div class="file-item">
+                    <div class="file-name">No encrypted files yet</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Secure File Encryption System &copy; 2023 | All files are encrypted and decrypted locally in your browser</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const fileInput = document.getElementById('fileInput');
+        const browseBtn = document.getElementById('browseBtn');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const fileType = document.getElementById('fileType');
+        const filePreview = document.getElementById('filePreview');
+        const encryptBtn = document.getElementById('encryptBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const encryptStatus = document.getElementById('encryptStatus');
+        
+        const decryptFileInput = document.getElementById('decryptFileInput');
+        const decryptBrowseBtn = document.getElementById('decryptBrowseBtn');
+        const decryptUploadArea = document.getElementById('decryptUploadArea');
+        const decryptFileInfo = document.getElementById('decryptFileInfo');
+        const decryptFileName = document.getElementById('decryptFileName');
+        const decryptFileSize = document.getElementById('decryptFileSize');
+        const decryptFilePreview = document.getElementById('decryptFilePreview');
+        const decryptBtn = document.getElementById('decryptBtn');
+        const decryptResetBtn = document.getElementById('decryptResetBtn');
+        const decryptStatus = document.getElementById('decryptStatus');
+        
+        const fileList = document.getElementById('fileList');
+        
+        // Current file data
+        let currentFile = null;
+        let currentEncryptedFile = null;
+        
+        // Event Listeners
+        browseBtn.addEventListener('click', () => fileInput.click());
+        decryptBrowseBtn.addEventListener('click', () => decryptFileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--primary-color)';
+            uploadArea.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#bdc3c7';
+            uploadArea.style.backgroundColor = '';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#bdc3c7';
+            uploadArea.style.backgroundColor = '';
+            
+            if (e.dataTransfer.files.length) {
+                handleFileSelection(e.dataTransfer.files[0]);
+            }
+        });
+        
+        decryptUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            decryptUploadArea.style.borderColor = 'var(--primary-color)';
+            decryptUploadArea.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
+        });
+        
+        decryptUploadArea.addEventListener('dragleave', () => {
+            decryptUploadArea.style.borderColor = '#bdc3c7';
+            decryptUploadArea.style.backgroundColor = '';
+        });
+        
+        decryptUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            decryptUploadArea.style.borderColor = '#bdc3c7';
+            decryptUploadArea.style.backgroundColor = '';
+            
+            if (e.dataTransfer.files.length) {
+                handleDecryptFileSelection(e.dataTransfer.files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFileSelection(e.target.files[0]);
+            }
+        });
+        
+        decryptFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleDecryptFileSelection(e.target.files[0]);
+            }
+        });
+        
+        encryptBtn.addEventListener('click', encryptFile);
+        decryptBtn.addEventListener('click', decryptFile);
+        
+        resetBtn.addEventListener('click', resetEncryption);
+        decryptResetBtn.addEventListener('click', resetDecryption);
+        
+        // Functions
+        function handleFileSelection(file) {
+            currentFile = file;
+            
+            // Update file info
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileType.textContent = file.type || 'Unknown';
+            
+            // Show file info
+            fileInfo.classList.add('active');
+            
+            // Enable buttons
+            encryptBtn.disabled = false;
+            resetBtn.disabled = false;
+            
+            // Show preview for images and videos
+            if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    filePreview.innerHTML = '';
+                    
+                    if (file.type.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        filePreview.appendChild(img);
+                    } else if (file.type.startsWith('video/')) {
+                        const video = document.createElement('video');
+                        video.src = e.target.result;
+                        video.controls = true;
+                        filePreview.appendChild(video);
+                    }
+                    
+                    filePreview.classList.add('active');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                filePreview.classList.remove('active');
+            }
+            
+            // Reset status
+            encryptStatus.className = 'status-message';
+            encryptStatus.textContent = '';
+        }
+        
+        function handleDecryptFileSelection(file) {
+            currentEncryptedFile = file;
+            
+            // Update file info
+            decryptFileName.textContent = file.name;
+            decryptFileSize.textContent = formatFileSize(file.size);
+            
+            // Show file info
+            decryptFileInfo.classList.add('active');
+            
+            // Enable buttons
+            decryptBtn.disabled = false;
+            decryptResetBtn.disabled = false;
+            
+            // Reset preview
+            decryptFilePreview.classList.remove('active');
+            
+            // Reset status
+            decryptStatus.className = 'status-message';
+            decryptStatus.textContent = '';
+        }
+        
+        async function encryptFile() {
+            if (!currentFile) return;
+            
+            // Show loading state
+            encryptBtn.innerHTML = '<div class="spinner"></div>';
+            encryptBtn.disabled = true;
+            
+            try {
+                // Generate a random key
+                const key = await crypto.subtle.generateKey(
+                    { name: 'AES-GCM', length: 256 },
+                    true,
+                    ['encrypt', 'decrypt']
+                );
+                
+                // Generate a random IV
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                
+                // Read the file as ArrayBuffer
+                const fileBuffer = await readFileAsArrayBuffer(currentFile);
+                
+                // Encrypt the file
+                const encryptedBuffer = await crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv },
+                    key,
+                    fileBuffer
+                );
+                
+                // Combine IV and encrypted data
+                const resultBuffer = new Uint8Array(iv.length + encryptedBuffer.byteLength);
+                resultBuffer.set(iv, 0);
+                resultBuffer.set(new Uint8Array(encryptedBuffer), iv.length);
+                
+                // Export the key as a string
+                const exportedKey = await crypto.subtle.exportKey('jwk', key);
+                const keyString = JSON.stringify(exportedKey);
+                
+                // Create a blob from the encrypted data
+                const encryptedBlob = new Blob([resultBuffer], { type: 'application/octet-stream' });
+                
+                // Create download link
+                const downloadUrl = URL.createObjectURL(encryptedBlob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = currentFile.name + '.encrypted';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(downloadUrl);
+                
+                // Store the key in localStorage with the filename as reference
+                const fileRecord = {
+                    fileName: currentFile.name,
+                    encryptedFileName: a.download,
+                    key: keyString,
+                    timestamp: new Date().toISOString()
+                };
+                
+                let encryptedFiles = JSON.parse(localStorage.getItem('encryptedFiles') || '[]');
+                encryptedFiles.push(fileRecord);
+                localStorage.setItem('encryptedFiles', JSON.stringify(encryptedFiles));
+                
+                // Update UI
+                encryptStatus.className = 'status-message status-success';
+                encryptStatus.innerHTML = `<i class="fas fa-check-circle"></i> File encrypted successfully! Downloading...`;
+                
+                // Update file list
+                updateFileList();
+                
+            } catch (error) {
+                console.error('Encryption error:', error);
+                encryptStatus.className = 'status-message status-error';
+                encryptStatus.innerHTML = `<i class="fas fa-exclamation-circle"></i> Encryption failed: ${error.message}`;
+            } finally {
+                // Reset button
+                encryptBtn.innerHTML = '<i class="fas fa-lock"></i> Encrypt File';
+                encryptBtn.disabled = false;
+            }
+        }
+        
+        async function decryptFile() {
+            if (!currentEncryptedFile) return;
+            
+            // Show loading state
+            decryptBtn.innerHTML = '<div class="spinner"></div>';
+            decryptBtn.disabled = true;
+            
+            try {
+                // Get the original filename from the encrypted file name
+                const originalFileName = currentEncryptedFile.name.replace('.encrypted', '');
+                
+                // Look up the key in localStorage
+                const encryptedFiles = JSON.parse(localStorage.getItem('encryptedFiles') || '[]');
+                const fileRecord = encryptedFiles.find(record => 
+                    record.encryptedFileName === currentEncryptedFile.name || 
+                    record.fileName === originalFileName
+                );
+                
+                if (!fileRecord) {
+                    throw new Error('No decryption key found for this file. It may have been encrypted by a different system.');
+                }
+                
+                // Import the key
+                const key = await crypto.subtle.importKey(
+                    'jwk',
+                    JSON.parse(fileRecord.key),
+                    { name: 'AES-GCM', length: 256 },
+                    false,
+                    ['decrypt']
+                );
+                
+                // Read the encrypted file
+                const encryptedBuffer = await readFileAsArrayBuffer(currentEncryptedFile);
+                
+                // Extract IV and encrypted data
+                const iv = encryptedBuffer.slice(0, 12);
+                const data = encryptedBuffer.slice(12);
+                
+                // Decrypt the file
+                const decryptedBuffer = await crypto.subtle.decrypt(
+                    { name: 'AES-GCM', iv },
+                    key,
+                    data
+                );
+                
+                // Create a blob from the decrypted data
+                const decryptedBlob = new Blob([decryptedBuffer]);
+                
+                // Create download link
+                const downloadUrl = URL.createObjectURL(decryptedBlob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = fileRecord.fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(downloadUrl);
+                
+                // Show preview if it's an image or video
+                if (fileRecord.fileName.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i)) {
+                    const img = document.createElement('img');
+                    img.src = downloadUrl;
+                    decryptFilePreview.innerHTML = '';
+                    decryptFilePreview.appendChild(img);
+                    decryptFilePreview.classList.add('active');
+                } else if (fileRecord.fileName.match(/\.(mp4|webm|ogg)$/i)) {
+                    const video = document.createElement('video');
+                    video.src = downloadUrl;
+                    video.controls = true;
+                    decryptFilePreview.innerHTML = '';
+                    decryptFilePreview.appendChild(video);
+                    decryptFilePreview.classList.add('active');
+                } else {
+                    decryptFilePreview.classList.remove('active');
+                }
+                
+                // Update UI
+                decryptStatus.className = 'status-message status-success';
+                decryptStatus.innerHTML = `<i class="fas fa-check-circle"></i> File decrypted successfully! Downloading...`;
+                
+            } catch (error) {
+                console.error('Decryption error:', error);
+                decryptStatus.className = 'status-message status-error';
+                decryptStatus.innerHTML = `<i class="fas fa-exclamation-circle"></i> Decryption failed: ${error.message}`;
+            } finally {
+                // Reset button
+                decryptBtn.innerHTML = '<i class="fas fa-unlock"></i> Decrypt File';
+                decryptBtn.disabled = false;
+            }
+        }
+        
+        function resetEncryption() {
+            currentFile = null;
+            fileInput.value = '';
+            fileInfo.classList.remove('active');
+            filePreview.classList.remove('active');
+            encryptBtn.disabled = true;
+            resetBtn.disabled = true;
+            encryptStatus.className = 'status-message';
+            encryptStatus.textContent = '';
+        }
+        
+        function resetDecryption() {
+            currentEncryptedFile = null;
+            decryptFileInput.value = '';
+            decryptFileInfo.classList.remove('active');
+            decryptFilePreview.classList.remove('active');
+            decryptBtn.disabled = true;
+            decryptResetBtn.disabled = true;
+            decryptStatus.className = 'status-message';
+            decryptStatus.textContent = '';
+        }
+        
+        function readFileAsArrayBuffer(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function updateFileList() {
+            const encryptedFiles = JSON.parse(localStorage.getItem('encryptedFiles') || '[]');
+            
+            if (encryptedFiles.length === 0) {
+                fileList.innerHTML = '<div class="file-item"><div class="file-name">No encrypted files yet</div></div>';
+                return;
+            }
+            
+            fileList.innerHTML = '';
+            encryptedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                
+                const fileInfo = document.createElement('div');
+                fileInfo.className = 'file-info';
+                
+                const fileName = document.createElement('div');
+                fileName.className = 'file-name';
+                fileName.textContent = file.fileName;
+                
+                const fileDetails = document.createElement('div');
+                fileDetails.className = 'file-details';
+                fileDetails.textContent = `Encrypted: ${new Date(file.timestamp).toLocaleDateString()}`;
+                
+                fileInfo.appendChild(fileName);
+                fileInfo.appendChild(fileDetails);
+                
+                const fileActions = document.createElement('div');
+                fileActions.className = 'file-actions';
+                
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'btn btn-secondary';
+                downloadBtn.innerHTML = '<i class="fas fa-download"></i>';
+                downloadBtn.title = 'Download encrypted file';
+                downloadBtn.addEventListener('click', () => {
+                    // This would need server-side implementation to actually download the file
+                    // For demo purposes, we'll just show a message
+                    alert('In a real implementation, this would download the encrypted file');
+                });
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-danger';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.title = 'Delete file record';
+                deleteBtn.addEventListener('click', () => {
+                    encryptedFiles.splice(index, 1);
+                    localStorage.setItem('encryptedFiles', JSON.stringify(encryptedFiles));
+                    updateFileList();
+                });
+                
+                fileActions.appendChild(downloadBtn);
+                fileActions.appendChild(deleteBtn);
+                
+                fileItem.appendChild(fileInfo);
+                fileItem.appendChild(fileActions);
+                
+                fileList.appendChild(fileItem);
+            });
+        }
+        
+        // Initialize
+        updateFileList();
+    </script>
+</body>
+</html>
